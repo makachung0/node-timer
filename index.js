@@ -1,51 +1,82 @@
+/* [keithma 26/8/20017] index.js
+
+This is a timer app running based on nodejs
+*/
+
+//Dependencies
 var http = require("http");
 var fs = require("fs");
 var express = require("express");
-
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+
 var inputTime;
 var inputTime2;
-var ok =1;
+var ok = 1;
+
+
 app.get('/', function(req, res) {
-    console.log('get root');
     res.sendFile(__dirname + '/public/index.html');
 });
+
+
+/*
+Socket.io functions
+
+1. add
+2. sub
+3. refresh
+4. start
+5. reset
+6. time
+7. update
+
+*/
+
 io.on('connection', function(socket) {
-    console.log('a user connected');
+
     socket.on('add', function(msg) {
         console.log('add: ');
         console.log(msg);
         add(msg.group, msg.value);
         io.emit('update', obj);
     });
+
     socket.on('sub', function(msg) {
         console.log('sub');
         console.log(msg);
         sub(msg.group, msg.value);
         io.emit('update', obj);
     });
+
     socket.on('refresh', function(msg) {
         console.log('refresh');
         io.emit('update', obj);
     });
+
     socket.on('start', function() {
-    	if(ok){
-    		start();
-    		ok=0;	
-    	}
+        
+        if (ok) {
+            start();
+            ok = 0;
+        }
+        
         io.emit('update', obj);
     });
+
     socket.on('reset', function() {
-    	ok=1;
+        ok = 1;
+        
         clearInterval(interval);
         clearInterval(interval2);
+        
         obj.gp1 = inputTime2 * 60 * 1000;
         obj.gp2 = inputTime2 * 60 * 1000;
         obj.gp3 = inputTime2 * 60 * 1000;
         obj.gp4 = inputTime2 * 60 * 1000;
     });
+    
     socket.on('time', function(msg) {
         console.log(msg);
         var inputTime = parseInt(msg);
@@ -119,5 +150,5 @@ function sub(group, time_raw) {
 
 //create server on port 8000
 http.listen(8000, function() {
-    console.log('listening on locahost:8000');
+    console.log('Node-timer running on locahost:8000');
 });
