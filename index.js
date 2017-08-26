@@ -115,7 +115,7 @@ function push() {
 }
 
 function add(group, time_raw) {
-    console.log("group " + group + " add " + time_raw + " minutes");
+
     var time = time_raw * 1000 * 60;
     if (group == "1") {
         obj.gp1 += time;
@@ -132,7 +132,6 @@ function add(group, time_raw) {
 }
 
 function sub(group, time_raw) {
-    console.log("group " + group + " sub " + time_raw + " minutes");
     var time = time_raw * 1000 * 60;
     if (group == "1") {
         obj.gp1 -= time;
@@ -148,7 +147,7 @@ function sub(group, time_raw) {
     }
 }
 
-//create server on port 8000
+//Create server on port 8000
 http.listen(8000, function() {
     console.log('Node-timer running on locahost:8000');
 });
