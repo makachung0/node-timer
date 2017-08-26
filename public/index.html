@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Timer</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+</head>
+
+<body>
+    <input id="value" autocomplete="off" placeholder="minute" />
+    <input id="group" autocomplete="off" placeholder="group number" />
+    <input id="time" autocomplete="off" placeholder="time" />
+    
+    <button id="add">Add</button>
+    <button id="sub">Subtract</button>
+    <button id="refresh">Refresh</button>
+    <button id="start">Start</button>
+    <button id="reset">Stop</button> 
+    <button id="settime">Set</button> 
+     
+    <table id="table" style="width:100%; text-align:center">
+      <tr>
+        <th>Group</th>
+        <th>Time</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td id="gp1"></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td id="gp2"></td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td id="gp3"></td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td id="gp4"></td>
+      </tr>
+      
+    </table>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+    var socket = io();
+    $('#start').click(function() {
+        socket.emit('start', {});
+        return false;
+    });
+    $('#add').click(function() {
+        var packet = {};
+        packet.group = $("#group").val();
+        packet.value = $('#value').val();
+        socket.emit('add', packet);
+        return false;
+    });
+    $('#sub').click(function() {
+        var packet = {};
+        packet.group = $("#group").val();
+        packet.value = $('#value').val();
+        socket.emit('sub', packet);
+        return false;
+    });
+
+    $('#refresh').click(function(){
+      socket.emit('refresh', {});
+    })
+
+    $('#reset').click(function(){
+      socket.emit('reset', {});
+    })
+    $('#settime').click(function(){
+      socket.emit('time', $('#time').val());
+    })
+    socket.on('update', function(obj_raw){
+      showTime(obj_raw);
+           
+    });
+
+    function showTime(obj_raw){
+      var obj = {};
+       
+      function hour(time){
+        var hour =  Math.floor((time/(1000*60*60))%24);
+        return hour.toString();
+      }
+      function minute(time){
+        var minute = Math.floor((time/(1000*60))%60);
+        return minute.toString();
+      }
+      function second(time){
+        var second =  Math.floor((time/1000)%60);
+        return second.toString();
+      }
+
+      if(obj_raw.gp1 >0){
+        obj.gp1 = hour(obj_raw.gp1)+" : "+minute(obj_raw.gp1)+" : "+second(obj_raw.gp1);  
+      }else {
+        obj.gp1 = "TIME OUT";
+      }
+      if(obj_raw.gp2 >0){
+        obj.gp2 = hour(obj_raw.gp2)+" : "+minute(obj_raw.gp2)+" : "+second(obj_raw.gp2);
+      }else {
+        obj.gp2 = "TIME OUT";
+      }
+      if(obj_raw.gp3 >0){
+        obj.gp3 = hour(obj_raw.gp3)+" : "+minute(obj_raw.gp3)+" : "+second(obj_raw.gp3);  
+      }else {
+        obj.gp3 = "TIME OUT";
+      }
+      if(obj_raw.gp4 >0){
+        obj.gp4 = hour(obj_raw.gp4)+" : "+minute(obj_raw.gp4)+" : "+second(obj_raw.gp4);
+      }else {
+        obj.gp4 = "TIME OUT";
+      }
+      
+      output(obj);
+    }
+
+    function output(obj){
+      $("#gp1").html(obj.gp1);
+      $("#gp2").html(obj.gp2);
+      $("#gp3").html(obj.gp3);
+      $("#gp4").html(obj.gp4);
+    }
+    </script>
+</body>
+
+</html>
