@@ -21,6 +21,11 @@ var serverTimer;
 var isStarting = false;
 
 var obj = {};
+obj.gpa = 0;
+obj.gpb = 0;
+obj.gpc = 0;
+obj.gpd = 0;
+obj.gpe = 0;
 
 var serverInterval = 0;
 var clientInterval = 0;
@@ -75,7 +80,7 @@ io.on('connection', function(socket) {
     // SocketioUtils.setListener("reset");
     // SocketioUtils.setListener("time");
 
- 
+
 
     socket.on('start', function() {
 
@@ -93,21 +98,24 @@ io.on('connection', function(socket) {
         clearInterval(serverInterval);
         clearInterval(clientInterval);
 
-        obj.gp1 = serverTimer * 60 * 1000;
-        obj.gp2 = serverTimer * 60 * 1000;
-        obj.gp3 = serverTimer * 60 * 1000;
-        obj.gp4 = serverTimer * 60 * 1000;
+
+        Object.keys(obj).forEach(function(group) {
+            obj[group] = serverTimer * 60 * 1000;
+        })
     });
 
     socket.on('time', function(msg) {
+        console.log("set Time");
+        console.log(msg);
 
         clientTimer = parseInt(msg);
         serverTimer = parseInt(msg);
 
-        obj.gp1 = clientTimer * 60 * 1000;
-        obj.gp2 = clientTimer * 60 * 1000;
-        obj.gp3 = clientTimer * 60 * 1000;
-        obj.gp4 = clientTimer * 60 * 1000;
+        Object.keys(obj).forEach(function(group) {
+
+            obj[group] = clientTimer * 60 * 1000;
+        })
+
     });
 
 });
@@ -133,14 +141,14 @@ function push() {
 function add(msg) {
 
     var time = msg.value * 1000 * 60;
-    obj["gp"+msg.group] += time;
+    obj["gp" + msg.group] += time;
 
 }
 
 function sub(msg) {
     console.log(msg)
     var time = msg.value * 1000 * 60;
-    obj["gp"+msg.group] -= time;
+    obj["gp" + msg.group] -= time;
 }
 
 //Create server on port 8000
